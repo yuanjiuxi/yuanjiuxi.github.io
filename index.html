@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yuan Jiuxi | PhD Candidate</title>
+    <style>
+        :root {
+            --primary: #8B4513; /* 秋日棕 */
+            --bg: #fdfcf8;
+            --text: #2c3e50;
+            --accent: #d35400;
+            --overlay-bg: rgba(0, 0, 0, 0.6);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        /* 导航栏 */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 5%;
+            background: rgba(255, 255, 255, 0.95);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            backdrop-filter: blur(5px);
+        }
+        .logo { font-weight: bold; font-size: 1.5rem; color: var(--primary); }
+        .nav-links a { margin-left: 20px; text-decoration: none; color: var(--text); font-weight: 500; transition: 0.3s; }
+        .nav-links a:hover { color: var(--accent); }
+
+        /* Header / 粒子区域 */
+        header {
+            min-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 { font-size: 3rem; margin: 10px 0; color: var(--primary); letter-spacing: 1px; }
+        p.subtitle { font-size: 1.1rem; color: #555; margin-bottom: 30px; font-weight: 300; }
+        
+        /* 粒子画布 */
+        #particle-wrapper {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 0 auto 20px;
+        }
+        #particle-canvas {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 15px 35px rgba(139, 69, 19, 0.25);
+            background: #eee; /* 加载前的占位色 */
+        }
+        
+        /* 社交按钮 */
+        .social-btn {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 8px 20px;
+            border-radius: 50px;
+            margin: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 0.9rem;
+        }
+        .social-btn:hover { background: var(--primary); color: #fff; transform: translateY(-2px); }
+
+        /* 导师部分 */
+        section { padding: 60px 10%; }
+        .advisors {
+            text-align: center;
+            background: #fff;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+        .advisors h2 { color: var(--accent); margin-bottom: 20px; }
+        .advisor-name { 
+            font-size: 1.2rem; 
+            margin: 10px 0; 
+            display: inline-block; 
+            margin: 0 15px;
+        }
+        .advisor-name a { color: var(--primary); text-decoration: none; border-bottom: 1px dashed var(--primary); }
+
+        /* 视频区域 */
+        #video-section {
+            background: #f4f4f4;
+            text-align: center;
+        }
+        video {
+            width: 100%;
+            max-width: 800px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            outline: none;
+        }
+
+        /* 游戏区域 */
+        #game-section {
+            background: linear-gradient(135deg, #2c3e50, #4ca1af);
+            color: #fff;
+            text-align: center;
+            padding-bottom: 50px;
+            position: relative;
+            overflow: hidden;
+        }
+        #game-canvas {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            border: 2px solid rgba(255,255,255,0.3);
+            display: block;
+            margin: 20px auto;
+            cursor: grab;
+            max-width: 100%; /* 手机适配 */
+            touch-action: none; /* 防止手机滑动屏幕 */
+        }
+        #game-canvas:active { cursor: grabbing; }
+        .level-badge {
+            background: var(--accent);
+            padding: 5px 15px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        /* 照片画廊 (初始隐藏) */
+        .gallery-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        /* 这里的模糊遮罩效果 */
+        .locked-photo {
+            position: relative;
+            height: 350px;
+            background: #ddd;
+            border-radius: 15px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #777;
+            font-weight: bold;
+        }
+        .locked-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top center; /* 关键：确保脸不被切掉 */
+            filter: blur(20px) grayscale(100%);
+            transition: all 1s ease;
+            opacity: 0.5;
+        }
+        .locked-photo.unlocked img {
+            filter: blur(0) grayscale(0);
+            opacity: 1;
+        }
+        .lock-icon {
+            position: absolute;
+            z-index: 10;
+            font-size: 2rem;
+            transition: opacity 0.5s;
+        }
+        .locked-photo.unlocked .lock-icon { opacity: 0; }
+
+        /* 炫酷弹窗 */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .modal.active { opacity: 1; pointer-events: all; }
+        .modal-content {
+            background: #fff;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 90%;
+            width: 350px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            transform: scale(0.8);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .modal.active .modal-content { transform: scale(1); }
+        .modal h3 { color: var(--primary); margin-top: 0; }
+        .copy-box {
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 1.1rem;
+            user-select: all;
+        }
+        .close-modal {
+            margin-top: 20px;
+            background: var(--text);
+            color: #fff;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            h1 { font-size: 2.2rem; }
+            #particle-canvas { width: 220px; height: 220px; }
+            #particle-wrapper { width: 220px; height: 220px; }
+            nav { padding: 15px; }
+            .nav-links { display: none; } /* 简化手机端导航 */
+            section { padding: 40px 5%; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">Yuan.J.X</div>
+        <div class="nav-links">
+            <a href="#about">About</a>
+            <a href="#video-section">Video</a>
+            <a href="#game-section">Play & Unlock</a>
+        </div>
+    </nav>
+
+    <header id="about">
+        <!-- 粒子容器 -->
+        <div id="particle-wrapper">
+            <canvas id="particle-canvas"></canvas>
+        </div>
+        
+        <h1>原久茜 (Jiuxi Yuan)</h1>
+        <p class="subtitle">
+            Exploring the Micro-World of Irradiation-Resistant Materials
+        </p>
+        
+        <div class="social-links">
+            <a href="https://scholar.google.com/citations?user=5wDcIWYAAAAJ&hl=zh-CN&oi=ao" target="_blank" class="social-btn">Google Scholar</a>
+            <a href="mailto:678ypw@gmail.com" class="social-btn">Email</a>
+            <button class="social-btn" onclick="showModal('WeChat', 'Tahiti-sunlight')">WeChat</button>
+            <button class="social-btn" onclick="showModal('Xiaohongshu', '354980229')">小红书</button>
+        </div>
+    </header>
+
+    <section>
+        <div class="advisors">
+            <h2>Academic Advisors</h2>
+            <div class="advisor-name">
+                Prof. <a href="https://scholar.google.com/citations?hl=zh-CN&user=PT6XB5UAAAAJ" target="_blank">Ke Jin</a>
+            </div>
+            <div class="advisor-name">
+                Prof. Xun Guo
+            </div>
+            <p style="margin-top:15px; font-size: 0.9rem; color: #888;">
+                Collaborator: <a href="https://scholar.google.com/citations?hl=zh-CN&user=cUB5XN8AAAAJ" target="_blank" style="color:#888; text-decoration:underline;">Peiwen Yuan</a>
+            </p>
+        </div>
+    </section>
+
+    <!-- 视频区域：始终显示 -->
+    <section id="video-section">
+        <h2 style="margin-bottom:30px; color:var(--text)">Basketball Moments</h2>
+        <video controls playsinline poster="">
+            <!-- 注意：上传到GitHub时请确保 video.mp4 在同一目录下 -->
+            <source src="./video.mp4" type="video/mp4">
+            <p>Your browser does not support html5 video. Please download the video.</p>
+        </video>
+    </section>
+
+    <!-- 升级版游戏区域 -->
+    <section id="game-section">
+        <h2>3-Point Contest</h2>
+        <p style="opacity: 0.9; margin-bottom: 5px;">Drag & Release to shoot! (手机也可以玩)</p>
+        <div class="level-badge" id="level-display">Level 1: Rookie</div>
+        
+        <canvas id="game-canvas" width="350" height="500"></canvas>
+        
+        <div class="gallery-container" id="gallery-container">
+            <!-- Level 1 Unlock -->
+            <div class="locked-photo" id="lp1">
+                <span class="lock-icon">🔒 Level 1</span>
+                <!-- 确保 img1.jpg, img2.jpg, img3.jpg 已上传 -->
+                <img src="./img1.jpg" alt="Photo 1">
+            </div>
+            <!-- Level 2 Unlock -->
+            <div class="locked-photo" id="lp2">
+                <span class="lock-icon">🔒 Level 2</span>
+                <img src="./img2.jpg" alt="Photo 2">
+            </div>
+            <!-- Level 3 Unlock -->
+            <div class="locked-photo" id="lp3">
+                <span class="lock-icon">🔒 Level 3</span>
+                <img src="./img3.jpg" alt="Photo 3">
+            </div>
+        </div>
+    </section>
+
+    <!-- 弹窗模态框 -->
+    <div id="custom-modal" class="modal">
+        <div class="modal-content">
+            <h3 id="modal-title">Title</h3>
+            <p>Scan or Search ID:</p>
+            <div class="copy-box" id="modal-text">ID_HERE</div>
+            <button class="close-modal" onclick="closeModal()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. 弹窗逻辑 ---
+        const modal = document.getElementById('custom-modal');
+        function showModal(title, text) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-text').innerText = text;
+            modal.classList.add('active');
+        }
+        function closeModal() {
+            modal.classList.remove('active');
+        }
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+
+        // --- 2. 高清粒子头像 (High Density Sand Effect) ---
+        const pCanvas = document.getElementById('particle-canvas');
+        const pCtx = pCanvas.getContext('2d');
+        // 增加画布分辨率以提高清晰度
+        pCanvas.width = 600; 
+        pCanvas.height = 600;
+        
+        let particles = [];
+        const mouse = { x: null, y: null, radius: 80 }; // 互动半径
+
+        // 坐标映射
+        function getMousePos(evt) {
+            const rect = pCanvas.getBoundingClientRect();
+            const scaleX = pCanvas.width / rect.width;
+            const scaleY = pCanvas.height / rect.height;
+            return {
+                x: (evt.clientX - rect.left) * scaleX,
+                y: (evt.clientY - rect.top) * scaleY
+            };
+        }
+
+        pCanvas.addEventListener('mousemove', (e) => {
+            const pos = getMousePos(e);
+            mouse.x = pos.x;
+            mouse.y = pos.y;
+        });
+        
+        // 手机触摸支持
+        pCanvas.addEventListener('touchmove', (e) => {
+            const pos = getMousePos(e.touches[0]);
+            mouse.x = pos.x;
+            mouse.y = pos.y;
+        }, {passive: true});
+
+        pCanvas.addEventListener('mouseleave', () => { mouse.x = null; mouse.y = null; });
+        pCanvas.addEventListener('touchend', () => { mouse.x = null; mouse.y = null; });
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x; // 当前位置
+                this.y = y;
+                this.originX = x; // 目标位置（归位）
+                this.originY = y;
+                this.color = color;
+                this.size = 2; // 粒子大小
+                this.vx = 0;
+                this.vy = 0;
+                this.friction = 0.9; // 摩擦力
+                this.ease = 0.1; // 归位速度
+            }
+            
+            draw() {
+                pCtx.fillStyle = this.color;
+                pCtx.fillRect(this.x, this.y, this.size, this.size);
+            }
+
+            update() {
+                // 鼠标互动逻辑
+                if (mouse.x != null) {
+                    let dx = mouse.x - this.x;
+                    let dy = mouse.y - this.y;
+                    let distance = Math.sqrt(dx*dx + dy*dy);
+                    if (distance < mouse.radius) {
+                        const force = (mouse.radius - distance) / mouse.radius;
+                        const angle = Math.atan2(dy, dx);
+                        const pushX = Math.cos(angle) * force * 50; // 推力
+                        const pushY = Math.sin(angle) * force * 50;
+                        this.vx -= pushX;
+                        this.vy -= pushY;
+                    }
+                }
+                
+                // 物理运动
+                this.vx *= this.friction;
+                this.vy *= this.friction;
+                
+                // 归位逻辑
+                this.x += this.vx + (this.originX - this.x) * this.ease;
+                this.y += this.vy + (this.originY - this.y) * this.ease;
+            }
+        }
+
+        function initParticles() {
+            const img = new Image();
+            img.src = 'avatar.jpg'; // 请确保有这个文件
+            
+            img.onload = () => {
+                // 绘制图片以获取像素数据
+                pCtx.drawImage(img, 0, 0, pCanvas.width, pCanvas.height);
+                const data = pCtx.getImageData(0, 0, pCanvas.width, pCanvas.height).data;
+                pCtx.clearRect(0,0,pCanvas.width, pCanvas.height);
+                
+                particles = [];
+                // 采样间隔：越小越清晰，但性能消耗越大。这里设为 4 (实际上是 4*4 区域取一个点)
+                // 为了清晰度，我们可以在绘制时把粒子画大一点，填补空隙
+                const gap = 3; 
+                
+                for (let y = 0; y < pCanvas.height; y += gap) {
+                    for (let x = 0; x < pCanvas.width; x += gap) {
+                        const index = (y * pCanvas.width + x) * 4;
+                        const alpha = data[index + 3];
+                        if (alpha > 128) {
+                            const color = `rgb(${data[index]}, ${data[index+1]}, ${data[index+2]})`;
+                            particles.push(new Particle(x, y, color));
+                        }
+                    }
+                }
+                animateParticles();
+            };
+            
+            // 如果图片加载失败或没上传，用文字代替
+            img.onerror = () => {
+                pCtx.fillStyle = '#8B4513';
+                pCtx.font = 'bold 300px Arial';
+                pCtx.textAlign = 'center';
+                pCtx.textBaseline = 'middle';
+                pCtx.fillText('J', pCanvas.width/2, pCanvas.height/2);
+                // 同样的逻辑转粒子... 省略以防代码过长，直接显示文字
+            }
+        }
+
+        function animateParticles() {
+            pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+            }
+            requestAnimationFrame(animateParticles);
+        }
+        initParticles();
+
+
+        // --- 3. 精致投篮游戏 (Physics & Levels) ---
+        const gCanvas = document.getElementById('game-canvas');
+        const gCtx = gCanvas.getContext('2d');
+        // 物理参数
+        const GRAVITY = 0.6;
+        const BOUNCE = 0.7;
+        
+        // 游戏状态
+        let level = 1;
+        let ball = { x: 50, y: 400, r: 12, vx: 0, vy: 0, isDragging: false, isFlying: false };
+        let dragStart = { x: 0, y: 0 };
+        let hoop = { x: 280, y: 150, w: 50, dir: 1, speed: 0 }; // 篮筐中心x, y, 宽度
+        
+        // 监听
+        function getGamePos(e) {
+            const rect = gCanvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top
+            };
+        }
+
+        gCanvas.addEventListener('mousedown', startDrag);
+        gCanvas.addEventListener('touchstart', startDrag, {passive: false});
+        
+        window.addEventListener('mousemove', moveDrag);
+        window.addEventListener('touchmove', moveDrag, {passive: false});
+        
+        window.addEventListener('mouseup', endDrag);
+        window.addEventListener('touchend', endDrag);
+
+        function startDrag(e) {
+            if(ball.isFlying) return;
+            if(e.cancelable) e.preventDefault(); // 防止手机滚动
+            const pos = getGamePos(e);
+            const dist = Math.hypot(pos.x - ball.x, pos.y - ball.y);
+            if(dist < 40) {
+                ball.isDragging = true;
+                dragStart = pos;
+            }
+        }
+
+        function moveDrag(e) {
+            if(ball.isDragging) {
+                if(e.cancelable) e.preventDefault();
+                const pos = getGamePos(e);
+                dragStart = pos; // 更新拖拽点用于绘制瞄准线
+            }
+        }
+
+        function endDrag(e) {
+            if(ball.isDragging) {
+                ball.isDragging = false;
+                ball.isFlying = true;
+                // 发射力度计算
+                ball.vx = (ball.x - dragStart.x) * 0.15;
+                ball.vy = (ball.y - dragStart.y) * 0.15;
+                // 限制最大速度
+                ball.vx = Math.max(Math.min(ball.vx, 15), -15);
+                ball.vy = Math.max(Math.min(ball.vy, 15), -15);
+            }
+        }
+
+        function resetBall() {
+            ball.isFlying = false;
+            ball.vx = 0; ball.vy = 0;
+            ball.x = 50; ball.y = 400; // 初始位置
+        }
+
+        function updateGame() {
+            gCtx.clearRect(0, 0, gCanvas.width, gCanvas.height);
+            
+            // --- 1. 更新篮筐位置 (关卡逻辑) ---
+            if(level === 2) {
+                hoop.x += 1 * hoop.dir;
+                if(hoop.x > 300 || hoop.x < 150) hoop.dir *= -1;
+            } else if (level === 3) {
+                hoop.x += 2.5 * hoop.dir;
+                if(hoop.x > 300 || hoop.x < 100) hoop.dir *= -1;
+            }
+
+            // --- 2. 绘制场景 ---
+            // 篮柱
+            gCtx.fillStyle = '#7f8c8d';
+            gCtx.fillRect(hoop.x + 40, hoop.y - 50, 10, 300);
+            
+            // 篮板 (Backboard)
+            gCtx.fillStyle = 'rgba(255,255,255,0.8)';
+            gCtx.fillRect(hoop.x + 15, hoop.y - 60, 10, 70);
+            gCtx.strokeStyle = '#c0392b';
+            gCtx.strokeRect(hoop.x + 22, hoop.y - 45, 3, 30); // 小红框
+
+            // 篮筐 (Rim) - 前半部分
+            gCtx.beginPath();
+            gCtx.strokeStyle = '#e74c3c';
+            gCtx.lineWidth = 4;
+            gCtx.moveTo(hoop.x - hoop.w/2, hoop.y);
+            gCtx.lineTo(hoop.x + 15, hoop.y); // 连接到篮板
+            gCtx.stroke();
+            
+            // --- 3. 球的物理逻辑 ---
+            if(ball.isFlying) {
+                ball.vy += GRAVITY;
+                ball.x += ball.vx;
+                ball.y += ball.vy;
+
+                // 地面反弹
+                if(ball.y + ball.r > gCanvas.height) {
+                    ball.y = gCanvas.height - ball.r;
+                    ball.vy *= -BOUNCE;
+                    ball.vx *= 0.8; // 摩擦
+                }
+                // 墙壁反弹
+                if(ball.x > gCanvas.width || ball.x < 0) ball.vx *= -0.8;
+
+                // 简单的停止判定
+                if(Math.abs(ball.vy) < 0.5 && Math.abs(ball.vx) < 0.5 && ball.y > gCanvas.height - 20) {
+                    resetBall();
+                }
+
+                // 碰撞检测：篮板
+                // 篮板前表面 x 约 hoop.x + 15
+                if(ball.x + ball.r > hoop.x + 15 && ball.x - ball.r < hoop.x + 25 && 
+                   ball.y > hoop.y - 60 && ball.y < hoop.y + 10) {
+                    ball.vx *= -1; // 反弹
+                    ball.x = hoop.x + 15 - ball.r - 2; // 防止粘连
+                }
+
+                // 进球判定 (简化版：从上往下穿过篮筐中心区域)
+                if(ball.vy > 0 && 
+                   ball.x > hoop.x - hoop.w/2 + 5 && 
+                   ball.x < hoop.x + 15 && 
+                   Math.abs(ball.y - hoop.y) < 10) {
+                       
+                       successShot();
+                       resetBall();
+                }
+            }
+
+            // 绘制瞄准线
+            if(ball.isDragging) {
+                gCtx.beginPath();
+                gCtx.strokeStyle = 'rgba(255,255,255,0.5)';
+                gCtx.setLineDash([5, 5]);
+                gCtx.moveTo(ball.x, ball.y);
+                gCtx.lineTo(ball.x + (ball.x - dragStart.x), ball.y + (ball.y - dragStart.y));
+                gCtx.stroke();
+                gCtx.setLineDash([]);
+            }
+
+            // 绘制球
+            gCtx.beginPath();
+            gCtx.fillStyle = '#e67e22';
+            gCtx.arc(ball.x, ball.y, ball.r, 0, Math.PI*2);
+            gCtx.fill();
+            // 纹理
+            gCtx.strokeStyle = '#d35400';
+            gCtx.lineWidth = 2;
+            gCtx.beginPath();
+            gCtx.moveTo(ball.x - ball.r, ball.y);
+            gCtx.lineTo(ball.x + ball.r, ball.y);
+            gCtx.stroke();
+
+            requestAnimationFrame(updateGame);
+        }
+
+        function successShot() {
+            // 解锁当前关卡对应的照片
+            const photo = document.getElementById(`lp${level}`);
+            if(photo) {
+                photo.classList.add('unlocked');
+                photo.querySelector('.lock-icon').innerHTML = "✨ Unlocked!";
+            }
+            
+            // 升级
+            if(level < 3) {
+                level++;
+                document.getElementById('level-display').innerText = `Level ${level}: ${level===2 ? 'Moving Target' : 'Pro Mode'}`;
+                showModal('NICE SHOT!', 'Moving to next level...');
+                setTimeout(closeModal, 1500);
+            } else {
+                document.getElementById('level-display').innerText = "All Clear! MVP!";
+                showModal('CHAMPION!', 'You unlocked everything!');
+            }
+        }
+
+        updateGame();
+
+    </script>
+</body>
+</html>
