@@ -356,8 +356,10 @@
         const cmdImg = new Image(); cmdImg.src = './commander.png'; 
         
         let bLevel = 1;
-        let bBall = { x:50, y:420, r:20, vx:0, vy:0, dragging:false, flying:false, rot:0 };
-        let bHoop = { x:280, y:220, w:45, dir:1.5 };
+        // 关键修改：r从20改成16，变小一点更好进
+        let bBall = { x:50, y:420, r:16, vx:0, vy:0, dragging:false, flying:false, rot:0 };
+        // 关键修改：w从45改成50，变宽一点
+        let bHoop = { x:280, y:220, w:50, dir:1.5 };
         let bDragStart = {x:0, y:0}; let bDragCurr = {x:0, y:0};
 
         function getBPos(e) {
@@ -371,7 +373,6 @@
         window.addEventListener('mouseup', bEnd); window.addEventListener('touchend', bEnd);
 
         function bStart(e) {
-            // 优化：如果在飞，点击屏幕任意位置直接重置
             if(bBall.flying) {
                 bBall.flying = false; 
                 bBall.x = 50; bBall.y = 420; bBall.vx = 0; bBall.vy = 0; bBall.rot = 0;
@@ -403,9 +404,7 @@
             // Physics
             if(bBall.flying) {
                 bBall.vy+=0.5; bBall.x+=bBall.vx; bBall.y+=bBall.vy; bBall.rot += bBall.vx * 0.1;
-                
-                // Friction
-                bBall.vx *= 0.99; // Air resistance
+                bBall.vx *= 0.99; // Drag
 
                 // Wall/Floor
                 if(bBall.y+bBall.r>500) { bBall.y=500-bBall.r; bBall.vy*=-0.6; bBall.vx*=0.8; }
@@ -422,7 +421,7 @@
                     bBall.vx *= -0.8; bBall.vy *= -0.8;
                 }
 
-                // Auto Reset when stopped
+                // Reset
                 if(Math.abs(bBall.vy)<0.5 && Math.abs(bBall.vx)<0.5 && bBall.y>480) { 
                     bBall.flying=false; bBall.x=50; bBall.y=420; bBall.rot=0; 
                 }
@@ -501,7 +500,6 @@
         window.addEventListener('mouseup', cEnd); window.addEventListener('touchend', cEnd);
 
         function cStart(e) {
-            // 优化：点击重置
             if(cBall.state!=='idle') {
                 initCmdLevel();
                 return;
