@@ -153,7 +153,7 @@
         .locked-photo img {
             width: 100%;
             height: 100%;
-            object-fit: contain; /* 完整显示照片 */
+            object-fit: contain; /* 完整显示 */
             filter: blur(20px) grayscale(100%);
             opacity: 0.5;
             transition: all 1s;
@@ -238,7 +238,10 @@
     <!-- GAME 1: 奔向篮筐的司令 -->
     <section id="basket-section" class="game-wrapper">
         <h2>Game 1: 奔向篮筐的司令</h2>
-        <p>↓ Drag down to shoot! (向下拖拽，送司令上篮)</p>
+        <p style="font-size: 0.9rem; opacity: 0.9;">
+            ↓ Drag to shoot. <b>Tap anywhere to RETRY!</b><br>
+            (没投进？点击屏幕任意处重置)
+        </p>
         <div class="level-badge" id="basket-level">Level 1: Rookie</div>
         
         <canvas id="basket-canvas" width="350" height="500"></canvas>
@@ -253,7 +256,10 @@
     <!-- GAME 2: ANGRY COMMANDER -->
     <section id="cmd-section" class="game-wrapper">
         <h2>Game 2: Angry Commander</h2>
-        <p>← Drag left to launch! (向后拖拽，发射司令)</p>
+        <p style="font-size: 0.9rem; opacity: 0.9;">
+            ← Drag back to launch. <b>Tap to RETRY!</b><br>
+            (向后拖拽发射。没打中点击重置)
+        </p>
         <div class="level-badge" id="cmd-level">Level 1: First Strike</div>
         
         <canvas id="cmd-canvas" width="600" height="400"></canvas>
@@ -343,14 +349,14 @@
         }
 
         // ==========================================
-        // GAME 1: 奔向篮筐的司令 (Commander Head Ball)
+        // GAME 1: 奔向篮筐的司令 (Commander Hoop)
         // ==========================================
         const bCanvas = document.getElementById('basket-canvas');
         const bCtx = bCanvas.getContext('2d');
-        const cmdImg = new Image(); cmdImg.src = './commander.png'; // 共享司令图片
+        const cmdImg = new Image(); cmdImg.src = './commander.png'; 
         
         let bLevel = 1;
-        let bBall = { x:50, y:420, r:20, vx:0, vy:0, dragging:false, flying:false, rot:0 }; // r加一点，rot旋转
+        let bBall = { x:50, y:420, r:20, vx:0, vy:0, dragging:false, flying:false, rot:0 };
         let bHoop = { x:280, y:220, w:45, dir:1.5 };
         let bDragStart = {x:0, y:0}; let bDragCurr = {x:0, y:0};
 
@@ -365,7 +371,12 @@
         window.addEventListener('mouseup', bEnd); window.addEventListener('touchend', bEnd);
 
         function bStart(e) {
-            if(bBall.flying) return;
+            // 优化：如果在飞，点击屏幕任意位置直接重置
+            if(bBall.flying) {
+                bBall.flying = false; 
+                bBall.x = 50; bBall.y = 420; bBall.vx = 0; bBall.vy = 0; bBall.rot = 0;
+                return;
+            }
             if(e.cancelable) e.preventDefault();
             const p = getBPos(e);
             if(Math.hypot(p.x-bBall.x, p.y-bBall.y)<50) { bBall.dragging=true; bDragStart=p; bDragCurr=p; }
@@ -384,40 +395,44 @@
             if(bLevel===3) { bHoop.x+=3*bHoop.dir; if(bHoop.x>310||bHoop.x<120) bHoop.dir*=-1; }
 
             // Draw Hoop
-            bCtx.fillStyle='#bdc3c7'; bCtx.fillRect(bHoop.x+40, bHoop.y-40, 8, 300); // Post
-            bCtx.fillStyle='#ecf0f1'; bCtx.fillRect(bHoop.x+15, bHoop.y-50, 6, 60); // Board
+            bCtx.fillStyle='#bdc3c7'; bCtx.fillRect(bHoop.x+40, bHoop.y-40, 8, 300); 
+            bCtx.fillStyle='#ecf0f1'; bCtx.fillRect(bHoop.x+15, bHoop.y-50, 6, 60); 
             bCtx.strokeStyle='#e74c3c'; bCtx.lineWidth=4; bCtx.beginPath();
             bCtx.moveTo(bHoop.x-bHoop.w/2, bHoop.y); bCtx.lineTo(bHoop.x+15, bHoop.y); bCtx.stroke();
 
             // Physics
             if(bBall.flying) {
-                bBall.vy+=0.5; bBall.x+=bBall.vx; bBall.y+=bBall.vy;
-                bBall.rot += bBall.vx * 0.1; // 旋转
+                bBall.vy+=0.5; bBall.x+=bBall.vx; bBall.y+=bBall.vy; bBall.rot += bBall.vx * 0.1;
+                
+                // Friction
+                bBall.vx *= 0.99; // Air resistance
 
                 // Wall/Floor
                 if(bBall.y+bBall.r>500) { bBall.y=500-bBall.r; bBall.vy*=-0.6; bBall.vx*=0.8; }
                 if(bBall.x>350||bBall.x<0) { bBall.vx*=-0.8; bBall.rot*=-1; }
 
-                // Backboard Bounce
+                // Backboard
                 if(bBall.x + bBall.r > bHoop.x + 15 && bBall.x - bBall.r < bHoop.x + 21 &&
                    bBall.y > bHoop.y - 50 && bBall.y < bHoop.y + 10) {
                      bBall.vx *= -0.7; bBall.x = bHoop.x + 15 - bBall.r - 2; bBall.rot*=-1;
                 }
-                // Rim Collision
+                // Rim
                 let rimX = bHoop.x - bHoop.w/2; let rimY = bHoop.y;
                 if(Math.hypot(bBall.x - rimX, bBall.y - rimY) < bBall.r + 3) {
                     bBall.vx *= -0.8; bBall.vy *= -0.8;
                 }
 
-                // Reset
-                if(Math.abs(bBall.vy)<0.5 && Math.abs(bBall.vx)<0.5 && bBall.y>480) { bBall.flying=false; bBall.x=50; bBall.y=420; bBall.rot=0; }
+                // Auto Reset when stopped
+                if(Math.abs(bBall.vy)<0.5 && Math.abs(bBall.vx)<0.5 && bBall.y>480) { 
+                    bBall.flying=false; bBall.x=50; bBall.y=420; bBall.rot=0; 
+                }
                 
                 // Score
                 if(bBall.vy>0 && bBall.x>bHoop.x-bHoop.w/2+5 && bBall.x<bHoop.x+10 && Math.abs(bBall.y-bHoop.y)<10) {
                     document.getElementById(`bp${bLevel}`).classList.add('unlocked');
                     if(bLevel<3) { bLevel++; document.getElementById('basket-level').innerText=`Level ${bLevel}`; }
                     bBall.flying=false; bBall.x=50; bBall.y=420; bBall.rot=0;
-                    showModal('SWISH!', 'Commander scored! Next photo unlocked.'); setTimeout(closeModal, 1500);
+                    showModal('SWISH!', 'Commander scored!'); setTimeout(closeModal, 1500);
                 }
             }
 
@@ -426,7 +441,7 @@
                 bCtx.beginPath(); bCtx.strokeStyle='rgba(255,255,255,0.6)'; bCtx.moveTo(bBall.x, bBall.y); bCtx.lineTo(bDragCurr.x, bDragCurr.y); bCtx.stroke();
             }
 
-            // Draw Commander Head (Game 1)
+            // Draw Commander Head
             bCtx.save();
             bCtx.translate(bBall.x, bBall.y);
             bCtx.rotate(bBall.rot);
@@ -434,7 +449,7 @@
             if(cmdImg.complete && cmdImg.naturalWidth!==0) {
                 bCtx.drawImage(cmdImg, -bBall.r, -bBall.r, bBall.r*2, bBall.r*2);
             } else {
-                bCtx.fillStyle='#e67e22'; bCtx.fill(); // 还没加载出来显示橙色球
+                bCtx.fillStyle='#e67e22'; bCtx.fill();
             }
             bCtx.restore();
 
@@ -444,11 +459,11 @@
 
 
         // ==========================================
-        // GAME 2: ANGRY COMMANDER (Power Update)
+        // GAME 2: ANGRY COMMANDER
         // ==========================================
         const cCanvas = document.getElementById('cmd-canvas');
         const cCtx = cCanvas.getContext('2d');
-        // cmdImg is already loaded above
+        // cmdImg already loaded
         
         let cLevel = 1;
         let cBall = { x:120, y:280, r:25, vx:0, vy:0, state:'idle', rot:0 };
@@ -486,7 +501,11 @@
         window.addEventListener('mouseup', cEnd); window.addEventListener('touchend', cEnd);
 
         function cStart(e) {
-            if(cBall.state!=='idle') return;
+            // 优化：点击重置
+            if(cBall.state!=='idle') {
+                initCmdLevel();
+                return;
+            }
             if(e.cancelable) e.preventDefault();
             const p = getCPos(e);
             if(Math.hypot(p.x-120, p.y-280)<80) { cBall.state='dragging'; cDrag=p; }
