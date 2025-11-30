@@ -142,7 +142,7 @@
         .locked-photo {
             position: relative;
             height: 250px;
-            background: #fff; /* 改为白色背景，防止黑边难看 */
+            background: #fff;
             border-radius: 10px;
             overflow: hidden;
             display: flex;
@@ -153,8 +153,7 @@
         .locked-photo img {
             width: 100%;
             height: 100%;
-            /* 关键修改：改为 contain，确保照片完整显示 */
-            object-fit: contain; 
+            object-fit: contain; /* 完整显示照片 */
             filter: blur(20px) grayscale(100%);
             opacity: 0.5;
             transition: all 1s;
@@ -201,7 +200,7 @@
         <div class="logo">Commander Yuan</div>
         <div class="nav-links">
             <a href="#about">About</a>
-            <a href="#basket-section">Basketball</a>
+            <a href="#basket-section">Commander Hoop</a>
             <a href="#cmd-section">Angry Commander</a>
         </div>
     </nav>
@@ -236,10 +235,10 @@
         </video>
     </div>
 
-    <!-- GAME 1: BASKETBALL -->
+    <!-- GAME 1: 奔向篮筐的司令 -->
     <section id="basket-section" class="game-wrapper">
-        <h2>Game 1: 3-Point Contest</h2>
-        <p>↓ Drag down to shoot! (向下拖拽投篮)</p>
+        <h2>Game 1: 奔向篮筐的司令</h2>
+        <p>↓ Drag down to shoot! (向下拖拽，送司令上篮)</p>
         <div class="level-badge" id="basket-level">Level 1: Rookie</div>
         
         <canvas id="basket-canvas" width="350" height="500"></canvas>
@@ -254,7 +253,7 @@
     <!-- GAME 2: ANGRY COMMANDER -->
     <section id="cmd-section" class="game-wrapper">
         <h2>Game 2: Angry Commander</h2>
-        <p>← Drag left to launch! (向后拖拽发射司令)</p>
+        <p>← Drag left to launch! (向后拖拽，发射司令)</p>
         <div class="level-badge" id="cmd-level">Level 1: First Strike</div>
         
         <canvas id="cmd-canvas" width="600" height="400"></canvas>
@@ -286,7 +285,7 @@
         function closeModal() { modal.classList.remove('active'); }
         modal.addEventListener('click', (e) => { if(e.target===modal) closeModal(); });
 
-        // --- 粒子头像逻辑 (保持不变) ---
+        // --- 粒子头像逻辑 ---
         const pCanvas = document.getElementById('particle-canvas');
         const pCtx = pCanvas.getContext('2d');
         pCanvas.width = 600; pCanvas.height = 600; pCtx.scale(2, 2); 
@@ -335,7 +334,6 @@
             }
             animateParticles();
         }
-        // Fallback if no avatar
         avatarImg.onerror = () => {
              pCtx.fillStyle='#8B4513'; pCtx.font='100px Arial'; pCtx.fillText('J.Y', 80, 180);
         }
@@ -345,12 +343,14 @@
         }
 
         // ==========================================
-        // GAME 1: BASKETBALL (优化物理碰撞)
+        // GAME 1: 奔向篮筐的司令 (Commander Head Ball)
         // ==========================================
         const bCanvas = document.getElementById('basket-canvas');
         const bCtx = bCanvas.getContext('2d');
+        const cmdImg = new Image(); cmdImg.src = './commander.png'; // 共享司令图片
+        
         let bLevel = 1;
-        let bBall = { x:50, y:420, r:12, vx:0, vy:0, dragging:false, flying:false };
+        let bBall = { x:50, y:420, r:20, vx:0, vy:0, dragging:false, flying:false, rot:0 }; // r加一点，rot旋转
         let bHoop = { x:280, y:220, w:45, dir:1.5 };
         let bDragStart = {x:0, y:0}; let bDragCurr = {x:0, y:0};
 
@@ -375,59 +375,49 @@
             if(bBall.dragging) {
                 bBall.dragging=false; bBall.flying=true;
                 bBall.vx = (bBall.x - bDragCurr.x)*0.25; bBall.vy = (bBall.y - bDragCurr.y)*0.25;
-                // Limit speed
                 bBall.vx = Math.min(Math.max(bBall.vx,-20),20); bBall.vy = Math.min(Math.max(bBall.vy,-20),20);
             }
         }
         function updateBasket() {
             bCtx.clearRect(0,0,350,500);
-            // Hoop Logic
             if(bLevel===2) { bHoop.x+=1.5*bHoop.dir; if(bHoop.x>300||bHoop.x<150) bHoop.dir*=-1; }
             if(bLevel===3) { bHoop.x+=3*bHoop.dir; if(bHoop.x>310||bHoop.x<120) bHoop.dir*=-1; }
 
-            // Draw Backboard & Rim
+            // Draw Hoop
             bCtx.fillStyle='#bdc3c7'; bCtx.fillRect(bHoop.x+40, bHoop.y-40, 8, 300); // Post
-            
-            // Backboard collision area: roughly x+15, width 6
             bCtx.fillStyle='#ecf0f1'; bCtx.fillRect(bHoop.x+15, bHoop.y-50, 6, 60); // Board
             bCtx.strokeStyle='#e74c3c'; bCtx.lineWidth=4; bCtx.beginPath();
-            bCtx.moveTo(bHoop.x-bHoop.w/2, bHoop.y); bCtx.lineTo(bHoop.x+15, bHoop.y); bCtx.stroke(); // Rim line
+            bCtx.moveTo(bHoop.x-bHoop.w/2, bHoop.y); bCtx.lineTo(bHoop.x+15, bHoop.y); bCtx.stroke();
 
-            // Ball Physics
+            // Physics
             if(bBall.flying) {
                 bBall.vy+=0.5; bBall.x+=bBall.vx; bBall.y+=bBall.vy;
-                
-                // 1. Wall/Floor Bounce
-                if(bBall.y+bBall.r>500) { bBall.y=500-bBall.r; bBall.vy*=-0.6; bBall.vx*=0.8; }
-                if(bBall.x>350||bBall.x<0) bBall.vx*=-0.8;
+                bBall.rot += bBall.vx * 0.1; // 旋转
 
-                // 2. Backboard Collision (打板)
-                // Board surface is roughly at bHoop.x + 15
+                // Wall/Floor
+                if(bBall.y+bBall.r>500) { bBall.y=500-bBall.r; bBall.vy*=-0.6; bBall.vx*=0.8; }
+                if(bBall.x>350||bBall.x<0) { bBall.vx*=-0.8; bBall.rot*=-1; }
+
+                // Backboard Bounce
                 if(bBall.x + bBall.r > bHoop.x + 15 && bBall.x - bBall.r < bHoop.x + 21 &&
                    bBall.y > bHoop.y - 50 && bBall.y < bHoop.y + 10) {
-                     bBall.vx *= -0.7; // Rebound
-                     bBall.x = bHoop.x + 15 - bBall.r - 2; // Separate
+                     bBall.vx *= -0.7; bBall.x = bHoop.x + 15 - bBall.r - 2; bBall.rot*=-1;
+                }
+                // Rim Collision
+                let rimX = bHoop.x - bHoop.w/2; let rimY = bHoop.y;
+                if(Math.hypot(bBall.x - rimX, bBall.y - rimY) < bBall.r + 3) {
+                    bBall.vx *= -0.8; bBall.vy *= -0.8;
                 }
 
-                // 3. Front Rim Collision (打前沿)
-                // Rim front point
-                let rimX = bHoop.x - bHoop.w/2;
-                let rimY = bHoop.y;
-                let dRim = Math.hypot(bBall.x - rimX, bBall.y - rimY);
-                if(dRim < bBall.r + 3) {
-                    bBall.vx *= -0.8;
-                    bBall.vy *= -0.8;
-                }
-
-                // Reset Check
-                if(Math.abs(bBall.vy)<0.5 && Math.abs(bBall.vx)<0.5 && bBall.y>480) { bBall.flying=false; bBall.x=50; bBall.y=420; }
+                // Reset
+                if(Math.abs(bBall.vy)<0.5 && Math.abs(bBall.vx)<0.5 && bBall.y>480) { bBall.flying=false; bBall.x=50; bBall.y=420; bBall.rot=0; }
                 
-                // Score? (Ball must be moving down, through the hoop width)
+                // Score
                 if(bBall.vy>0 && bBall.x>bHoop.x-bHoop.w/2+5 && bBall.x<bHoop.x+10 && Math.abs(bBall.y-bHoop.y)<10) {
                     document.getElementById(`bp${bLevel}`).classList.add('unlocked');
                     if(bLevel<3) { bLevel++; document.getElementById('basket-level').innerText=`Level ${bLevel}`; }
-                    bBall.flying=false; bBall.x=50; bBall.y=420;
-                    showModal('SWISH!', 'Basket made! Next photo unlocked.'); setTimeout(closeModal, 1500);
+                    bBall.flying=false; bBall.x=50; bBall.y=420; bBall.rot=0;
+                    showModal('SWISH!', 'Commander scored! Next photo unlocked.'); setTimeout(closeModal, 1500);
                 }
             }
 
@@ -436,26 +426,36 @@
                 bCtx.beginPath(); bCtx.strokeStyle='rgba(255,255,255,0.6)'; bCtx.moveTo(bBall.x, bBall.y); bCtx.lineTo(bDragCurr.x, bDragCurr.y); bCtx.stroke();
             }
 
-            // Draw Ball
-            bCtx.beginPath(); bCtx.fillStyle='#e67e22'; bCtx.arc(bBall.x, bBall.y, bBall.r, 0, Math.PI*2); bCtx.fill();
+            // Draw Commander Head (Game 1)
+            bCtx.save();
+            bCtx.translate(bBall.x, bBall.y);
+            bCtx.rotate(bBall.rot);
+            bCtx.beginPath(); bCtx.arc(0,0,bBall.r,0,Math.PI*2); bCtx.clip();
+            if(cmdImg.complete && cmdImg.naturalWidth!==0) {
+                bCtx.drawImage(cmdImg, -bBall.r, -bBall.r, bBall.r*2, bBall.r*2);
+            } else {
+                bCtx.fillStyle='#e67e22'; bCtx.fill(); // 还没加载出来显示橙色球
+            }
+            bCtx.restore();
+
             requestAnimationFrame(updateBasket);
         }
         updateBasket();
 
 
         // ==========================================
-        // GAME 2: ANGRY COMMANDER (优化发射力度)
+        // GAME 2: ANGRY COMMANDER (Power Update)
         // ==========================================
         const cCanvas = document.getElementById('cmd-canvas');
         const cCtx = cCanvas.getContext('2d');
-        const cmdImg = new Image(); cmdImg.src = './commander.png'; 
+        // cmdImg is already loaded above
         
         let cLevel = 1;
         let cBall = { x:120, y:280, r:25, vx:0, vy:0, state:'idle', rot:0 };
         let cDrag = { x:120, y:280 };
         let cTargets = [];
-        let cExplosions = []; // 爆炸粒子
-        let cTrail = []; // 轨迹
+        let cExplosions = [];
+        let cTrail = [];
 
         function initCmdLevel() {
             cBall.state='idle'; cBall.x=120; cBall.y=280; cBall.vx=0; cBall.vy=0; cBall.rot=0; cTrail=[];
@@ -468,14 +468,13 @@
                 cTargets.push({x:480,y:250,w:40,h:40,hp:1, move:true, oy:250});
             } else {
                 cTargets.push({x:520,y:310,w:30,h:30,hp:1}); 
-                cTargets.push({x:350,y:250,w:20,h:100,type:'wall'}); // Wall
+                cTargets.push({x:350,y:250,w:20,h:100,type:'wall'});
             }
             document.getElementById('cmd-level').innerText = `Level ${cLevel}: ${cLevel===1?'First Strike':(cLevel===2?'Moving Targets':'The Fortress')}`;
         }
 
         function getCPos(e) {
             const r = cCanvas.getBoundingClientRect();
-            // 修正Canvas缩放
             const sx = cCanvas.width/r.width; const sy = cCanvas.height/r.height;
             const cx = e.touches?e.touches[0].clientX:e.clientX;
             const cy = e.touches?e.touches[0].clientY:e.clientY;
@@ -498,7 +497,6 @@
                 let p = getCPos(e);
                 let dx = p.x-120; let dy = p.y-280;
                 let d = Math.sqrt(dx*dx+dy*dy);
-                // 关键修改：增加最大拖拽距离 100 -> 130
                 if(d>130) { p.x=120+dx*(130/d); p.y=280+dy*(130/d); }
                 cDrag = p; cBall.x=p.x; cBall.y=p.y;
             }
@@ -506,18 +504,15 @@
         function cEnd() {
             if(cBall.state==='dragging') {
                 cBall.state='flying';
-                // 关键修改：增加弹力系数 0.22 -> 0.35，让手机更容易射远
                 cBall.vx = (120 - cBall.x)*0.35; 
                 cBall.vy = (280 - cBall.y)*0.35;
             }
         }
 
-        // 爆炸粒子系统
         function createExplosion(x, y) {
             for(let i=0; i<20; i++) {
                 cExplosions.push({
-                    x:x, y:y, 
-                    vx:(Math.random()-0.5)*10, vy:(Math.random()-0.5)*10, 
+                    x:x, y:y, vx:(Math.random()-0.5)*10, vy:(Math.random()-0.5)*10, 
                     life:1.0, color:`hsl(${Math.random()*60+10}, 100%, 50%)`
                 });
             }
@@ -525,48 +520,29 @@
 
         function updateCmd() {
             cCtx.clearRect(0,0,600,400);
-            
-            // 地面
             cCtx.fillStyle='#ecf0f1'; cCtx.fillRect(0,350,600,50);
 
-            // 移动靶逻辑
             const time = Date.now()/500;
-            cTargets.forEach(t => {
-                if(t.move && t.hp>0) t.y = t.oy + Math.sin(time)*40;
-            });
+            cTargets.forEach(t => { if(t.move && t.hp>0) t.y = t.oy + Math.sin(time)*40; });
 
-            // 物理
             if(cBall.state==='flying') {
-                cBall.vy += 0.4; 
-                cBall.x += cBall.vx; cBall.y += cBall.vy; cBall.rot+=0.2;
-                
-                // 记录轨迹
+                cBall.vy += 0.4; cBall.x += cBall.vx; cBall.y += cBall.vy; cBall.rot+=0.2;
                 if(cTrail.length%3===0) cTrail.push({x:cBall.x, y:cBall.y});
 
-                // 边界
                 if(cBall.y+cBall.r>350) { 
                     cBall.y=350-cBall.r; cBall.vy*=-0.5; cBall.vx*=0.6; 
                     if(Math.abs(cBall.vx)<0.5 && Math.abs(cBall.vy)<0.5) setTimeout(initCmdLevel, 1000);
                 }
                 if(cBall.x>600) setTimeout(initCmdLevel, 500);
 
-                // 碰撞检测
                 let activeTargets = 0;
                 cTargets.forEach(t => {
                     if(t.hp<=0) return;
                     if(t.type!=='wall') activeTargets++;
-                    
-                    // AABB Check
                     if(cBall.x+cBall.r > t.x && cBall.x-cBall.r < t.x+t.w &&
                        cBall.y+cBall.r > t.y && cBall.y-cBall.r < t.y+t.h) {
-                        
-                        if(t.type==='wall') {
-                            cBall.vx *= -0.6; // 撞墙
-                        } else {
-                            t.hp = 0; // 击毁
-                            cBall.vy *= 0.6;
-                            createExplosion(t.x+t.w/2, t.y+t.h/2);
-                        }
+                        if(t.type==='wall') { cBall.vx *= -0.6; } 
+                        else { t.hp = 0; cBall.vy *= 0.6; createExplosion(t.x+t.w/2, t.y+t.h/2); }
                     }
                 });
 
@@ -582,57 +558,41 @@
                 }
             }
 
-            // 绘制轨迹
-            cCtx.beginPath();
-            cTrail.forEach(p => cCtx.lineTo(p.x, p.y));
+            cCtx.beginPath(); cTrail.forEach(p => cCtx.lineTo(p.x, p.y));
             cCtx.strokeStyle = 'rgba(142, 68, 173, 0.3)'; cCtx.lineWidth=4; cCtx.stroke();
 
-            // 绘制目标
             cTargets.forEach(t => {
                 if(t.hp<=0) return;
                 cCtx.fillStyle = t.type==='wall' ? '#7f8c8d' : '#c0392b';
                 cCtx.fillRect(t.x, t.y, t.w, t.h);
-                // 纹理
                 cCtx.strokeStyle='#fff'; cCtx.lineWidth=2; cCtx.strokeRect(t.x, t.y, t.w, t.h);
             });
 
-            // 绘制弹弓后
             cCtx.beginPath(); cCtx.lineWidth=5; cCtx.strokeStyle='#5d4037';
             cCtx.moveTo(105, 280); 
             if(cBall.state==='dragging') cCtx.lineTo(cBall.x, cBall.y); else cCtx.lineTo(120, 280);
             cCtx.stroke();
 
-            // 绘制司令 (图片优先，失败则画黄球)
             cCtx.save();
             cCtx.translate(cBall.x, cBall.y); cCtx.rotate(cBall.rot);
             cCtx.beginPath(); cCtx.arc(0,0,cBall.r,0,Math.PI*2); cCtx.clip();
-            
             if(cmdImg.complete && cmdImg.naturalWidth !== 0) {
                 cCtx.drawImage(cmdImg, -cBall.r, -cBall.r, cBall.r*2, cBall.r*2);
             } else {
-                cCtx.fillStyle='#f1c40f'; cCtx.fill(); cCtx.fillStyle='#000'; cCtx.font='12px Arial'; cCtx.fillText('Cmdr', -14, 4);
+                cCtx.fillStyle='#f1c40f'; cCtx.fill();
             }
             cCtx.restore();
 
-            // 绘制弹弓前
             cCtx.beginPath(); cCtx.lineWidth=5; cCtx.strokeStyle='#3e2723';
             cCtx.moveTo(135, 280);
             if(cBall.state==='dragging') cCtx.lineTo(cBall.x, cBall.y); else cCtx.lineTo(120, 280);
             cCtx.stroke();
-            
-            // 绘制弹弓座
             cCtx.fillStyle='#5d4037'; cCtx.fillRect(115, 280, 10, 70);
 
-            // 绘制爆炸
             for(let i=cExplosions.length-1; i>=0; i--) {
-                let p = cExplosions[i];
-                p.life -= 0.05; p.x += p.vx; p.y += p.vy;
+                let p = cExplosions[i]; p.life -= 0.05; p.x += p.vx; p.y += p.vy;
                 if(p.life<=0) cExplosions.splice(i,1);
-                else {
-                    cCtx.globalAlpha = p.life; cCtx.fillStyle = p.color;
-                    cCtx.beginPath(); cCtx.arc(p.x, p.y, 4, 0, Math.PI*2); cCtx.fill();
-                    cCtx.globalAlpha = 1.0;
-                }
+                else { cCtx.globalAlpha = p.life; cCtx.fillStyle = p.color; cCtx.beginPath(); cCtx.arc(p.x, p.y, 4, 0, Math.PI*2); cCtx.fill(); cCtx.globalAlpha = 1.0; }
             }
 
             requestAnimationFrame(updateCmd);
