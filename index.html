@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Yuan Jiuxi | PhD Candidate</title>
+    <title>Commander Yuan | PhD Candidate</title>
     <style>
         :root {
-            --primary: #8B4513; /* 秋日棕 */
+            --primary: #8B4513;
             --bg: #fdfcf8;
             --text: #2c3e50;
-            --accent: #e67e22;
+            --accent: #c0392b; /* 愤怒红 */
         }
 
         body {
@@ -18,7 +18,7 @@
             background-color: var(--bg);
             color: var(--text);
             overflow-x: hidden;
-            touch-action: pan-y; /* 允许垂直滚动，但在游戏区禁用 */
+            touch-action: pan-y;
         }
 
         /* 导航栏 */
@@ -36,7 +36,6 @@
         }
         .logo { font-weight: bold; font-size: 1.5rem; color: var(--primary); }
         .nav-links a { margin-left: 20px; text-decoration: none; color: var(--text); font-weight: 500; transition: 0.3s; }
-        .nav-links a:hover { color: var(--accent); }
 
         /* Header / 粒子区域 */
         header {
@@ -49,8 +48,8 @@
             padding: 20px;
         }
 
-        h1 { font-size: 3rem; margin: 15px 0; color: var(--primary); letter-spacing: 1px; }
-        p.subtitle { font-size: 1.1rem; color: #555; margin-bottom: 30px; font-weight: 300; max-width: 800px; }
+        h1 { font-size: 3rem; margin: 15px 0; color: var(--primary); }
+        p.subtitle { font-size: 1.1rem; color: #555; margin-bottom: 30px; font-weight: 300; }
         
         /* 粒子画布 */
         #particle-wrapper {
@@ -62,7 +61,7 @@
         #particle-canvas {
             width: 300px;
             height: 300px;
-            border-radius: 50%; /* 圆形头像 */
+            border-radius: 50%;
             cursor: pointer;
             box-shadow: 0 15px 35px rgba(139, 69, 19, 0.15);
             background: #f0f0f0; 
@@ -79,9 +78,8 @@
             cursor: pointer;
             font-size: 0.9rem;
             transition: all 0.2s;
-            text-decoration: none;
         }
-        .social-btn:hover { background: var(--primary); color: #fff; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(139, 69, 19, 0.2); }
+        .social-btn:hover { background: var(--primary); color: #fff; transform: translateY(-2px); }
 
         /* 导师部分 */
         section { padding: 60px 8%; }
@@ -91,55 +89,52 @@
             padding: 40px;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.03);
-            border: 1px solid rgba(0,0,0,0.02);
         }
-        .advisors h2 { color: var(--accent); margin-bottom: 25px; font-size: 1.8rem; }
-        .advisor-name { 
-            font-size: 1.1rem; 
-            margin: 10px; 
-            display: inline-block; 
-            font-weight: 500;
-        }
+        .advisor-name { font-size: 1.1rem; margin: 10px; display: inline-block; font-weight: 500; }
         .advisor-name a { color: var(--primary); text-decoration: none; border-bottom: 1px dashed var(--primary); }
 
         /* 视频区域 */
-        #video-section {
-            background: #f9f9f9;
-            text-align: center;
-        }
-        video {
-            width: 90%;
-            max-width: 700px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
+        #video-section { background: #f9f9f9; text-align: center; }
+        video { width: 90%; max-width: 700px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
 
-        /* 游戏区域 */
+        /* --- 愤怒的司令 游戏区域 --- */
         #game-section {
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            background: linear-gradient(135deg, #8e44ad, #3498db); /* 紫调背景，带点神秘感 */
             color: #fff;
             text-align: center;
             padding-bottom: 60px;
             position: relative;
+            user-select: none;
+        }
+        #game-title {
+            font-family: 'Arial Black', sans-serif;
+            font-size: 2.5rem;
+            text-shadow: 3px 3px 0px #000;
+            margin-bottom: 5px;
+            color: #f1c40f;
         }
         #game-canvas {
-            background: rgba(255,255,255,0.05);
+            background: rgba(0,0,0,0.2);
             border-radius: 10px;
-            border: 2px solid rgba(255,255,255,0.2);
+            border: 4px solid rgba(255,255,255,0.3);
             display: block;
             margin: 20px auto;
             cursor: grab;
-            touch-action: none; /* 关键：防止手机拖动时滚动页面 */
+            touch-action: none; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
         #game-canvas:active { cursor: grabbing; }
+        
         .level-badge {
             background: #e74c3c;
-            padding: 5px 15px;
+            padding: 5px 20px;
             border-radius: 20px;
             font-weight: bold;
             display: inline-block;
             margin-bottom: 15px;
-            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+            box-shadow: 0 5px 0 #c0392b;
+            transform: translateY(0);
+            transition: transform 0.1s;
         }
 
         /* 画廊 */
@@ -152,22 +147,22 @@
         .locked-photo {
             position: relative;
             height: 350px;
-            background: #e0e0e0;
+            background: #fff;
             border-radius: 15px;
             overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
-        /* 这里的 CSS 确保照片显示顶部（脸部） */
         .locked-photo img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            object-position: top center; /* 关键修复：对齐顶部 */
-            filter: blur(25px) grayscale(100%);
-            transition: all 1.5s cubic-bezier(0.19, 1, 0.22, 1);
-            opacity: 0.6;
+            object-position: top center; 
+            filter: blur(30px) grayscale(100%);
+            transition: all 1s ease;
+            opacity: 0.4;
         }
         .locked-photo.unlocked img {
             filter: blur(0) grayscale(0);
@@ -177,20 +172,20 @@
             position: absolute;
             z-index: 10;
             font-size: 1.5rem;
-            color: #555;
-            background: rgba(255,255,255,0.8);
+            color: #333;
+            background: rgba(255,255,255,0.9);
             padding: 10px 20px;
             border-radius: 30px;
-            transition: opacity 0.5s;
+            font-weight: bold;
         }
-        .locked-photo.unlocked .lock-icon { opacity: 0; pointer-events: none; }
+        .locked-photo.unlocked .lock-icon { display: none; }
 
         /* 弹窗 */
         .modal {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(8px);
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(5px);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -201,45 +196,33 @@
         }
         .modal.active { opacity: 1; pointer-events: all; }
         .modal-content {
-            background: rgba(255,255,255,0.95);
+            background: #fff;
             padding: 30px;
             border-radius: 20px;
             text-align: center;
             width: 300px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
-            transform: scale(0.9);
-            transition: transform 0.3s;
+            transform: scale(0.8);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         .modal.active .modal-content { transform: scale(1); }
-        .copy-box {
-            background: #f1f2f6;
-            padding: 12px;
-            border-radius: 8px;
-            margin: 15px 0;
-            font-family: monospace;
-            font-weight: bold;
-            color: var(--primary);
-            user-select: all;
-        }
 
         @media (max-width: 768px) {
             h1 { font-size: 2rem; }
-            #particle-canvas { width: 240px; height: 240px; }
-            #particle-wrapper { width: 240px; height: 240px; }
+            #particle-canvas, #particle-wrapper { width: 240px; height: 240px; }
             .nav-links { display: none; } 
             section { padding: 40px 5%; }
-            #game-canvas { width: 340px; height: 480px; }
+            #game-canvas { width: 340px; height: 450px; }
         }
     </style>
 </head>
 <body>
 
     <nav>
-        <div class="logo">Yuan.J.X</div>
+        <div class="logo">Commander Yuan</div>
         <div class="nav-links">
             <a href="#about">About</a>
             <a href="#video-section">Video</a>
-            <a href="#game-section">Play</a>
+            <a href="#game-section">Angry Commander</a>
         </div>
     </nav>
 
@@ -264,12 +247,8 @@
     <section>
         <div class="advisors">
             <h2>Academic Advisors</h2>
-            <div class="advisor-name">
-                Prof. <a href="https://scholar.google.com/citations?hl=zh-CN&user=PT6XB5UAAAAJ" target="_blank">Ke Jin</a>
-            </div>
-            <div class="advisor-name">
-                Prof. Xun Guo
-            </div>
+            <div class="advisor-name">Prof. <a href="https://scholar.google.com/citations?hl=zh-CN&user=PT6XB5UAAAAJ" target="_blank">Ke Jin</a></div>
+            <div class="advisor-name">Prof. Xun Guo</div>
             <div style="margin-top:15px; font-size: 0.95rem; color: #666;">
                 Collaborator: <a href="https://scholar.google.com/citations?hl=zh-CN&user=cUB5XN8AAAAJ" target="_blank" style="color:#666; text-decoration:underline;">Peiwen Yuan</a>
             </div>
@@ -278,7 +257,6 @@
 
     <section id="video-section">
         <h2 style="margin-bottom:20px; color:var(--text)">Basketball Moments</h2>
-        <!-- 确保 video.mp4 文件在同一目录下 -->
         <video controls playsinline>
             <source src="./video.mp4" type="video/mp4">
             Your browser does not support html5 video.
@@ -286,27 +264,26 @@
     </section>
 
     <section id="game-section">
-        <h2 style="margin-bottom: 5px;">3-Point Shooter</h2>
-        <p style="opacity: 0.8; margin-bottom: 20px; font-size:0.9rem;">↓ Drag down to shoot up! (向下拖拽蓄力)</p>
-        <div class="level-badge" id="level-display">Level 1: Rookie</div>
+        <div id="game-title">ANGRY COMMANDER</div>
+        <p style="opacity: 0.9; margin-bottom: 20px;">
+            Drag left to launch the Commander! (向后拖拽，发射司令！)
+        </p>
+        <div class="level-badge" id="level-display">Level 1: First Strike</div>
         
         <!-- 游戏画布 -->
-        <canvas id="game-canvas" width="350" height="500"></canvas>
+        <canvas id="game-canvas" width="600" height="400"></canvas>
         
         <div class="gallery-container" id="gallery-container">
-            <!-- Level 1 Unlock -->
             <div class="locked-photo" id="lp1">
-                <span class="lock-icon">🔒 Level 1 Reward</span>
+                <span class="lock-icon">🔒 Mission 1 Reward</span>
                 <img src="./img1.jpg" alt="Photo 1">
             </div>
-            <!-- Level 2 Unlock -->
             <div class="locked-photo" id="lp2">
-                <span class="lock-icon">🔒 Level 2 Reward</span>
+                <span class="lock-icon">🔒 Mission 2 Reward</span>
                 <img src="./img2.jpg" alt="Photo 2">
             </div>
-            <!-- Level 3 Unlock -->
             <div class="locked-photo" id="lp3">
-                <span class="lock-icon">🔒 Level 3 Reward</span>
+                <span class="lock-icon">🔒 Mission 3 Reward</span>
                 <img src="./img3.jpg" alt="Photo 3">
             </div>
         </div>
@@ -315,95 +292,64 @@
     <div id="custom-modal" class="modal">
         <div class="modal-content">
             <h3 id="modal-title" style="color:var(--primary); margin-top:0;">Title</h3>
-            <p>Scan or Search ID:</p>
-            <div class="copy-box" id="modal-text">ID</div>
-            <button class="social-btn" onclick="closeModal()" style="background:var(--primary); color:#fff;">Close</button>
+            <p style="color:#333;">Scan or Search ID:</p>
+            <div style="background:#f1f2f6; padding:10px; font-weight:bold; color:var(--primary); margin:10px 0; user-select:all;" id="modal-text">ID</div>
+            <button class="social-btn" onclick="closeModal()" style="background:var(--primary); color:#fff; border:none;">Close</button>
         </div>
     </div>
 
     <script>
-        // --- 1. 弹窗功能 ---
+        // --- 1. 通用工具 ---
         const modal = document.getElementById('custom-modal');
         function showModal(title, text) {
             document.getElementById('modal-title').innerText = title;
             document.getElementById('modal-text').innerText = text;
             modal.classList.add('active');
         }
-        function closeModal() {
-            modal.classList.remove('active');
-        }
-        modal.addEventListener('click', (e) => {
-            if(e.target === modal) closeModal();
-        });
+        function closeModal() { modal.classList.remove('active'); }
+        modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
 
-        // --- 2. 高清粒子头像 (修复版) ---
+        // --- 2. 粒子头像 (高清版) ---
         const pCanvas = document.getElementById('particle-canvas');
         const pCtx = pCanvas.getContext('2d');
-        // 画布尺寸：300显示，但逻辑像素放大以提高清晰度
         const displaySize = 300;
-        pCanvas.width = displaySize * 2; // 2x 分辨率
+        pCanvas.width = displaySize * 2; 
         pCanvas.height = displaySize * 2;
-        pCtx.scale(2, 2); // 绘图坐标系归一化到 300x300
+        pCtx.scale(2, 2); 
 
         let particles = [];
         const mouse = { x: null, y: null, radius: 60 };
 
-        // 坐标转换
         function getMousePos(evt) {
             const rect = pCanvas.getBoundingClientRect();
-            // 映射到 0-300 坐标系
             return {
                 x: (evt.clientX - rect.left) * (300 / rect.width),
                 y: (evt.clientY - rect.top) * (300 / rect.height)
             };
         }
-
-        pCanvas.addEventListener('mousemove', e => {
-            const pos = getMousePos(e);
-            mouse.x = pos.x; mouse.y = pos.y;
-        });
-        pCanvas.addEventListener('touchmove', e => {
-            const pos = getMousePos(e.touches[0]);
-            mouse.x = pos.x; mouse.y = pos.y;
-        }, {passive: true});
-        
-        ['mouseleave', 'touchend'].forEach(evt => {
-            pCanvas.addEventListener(evt, () => { mouse.x = null; mouse.y = null; });
-        });
+        pCanvas.addEventListener('mousemove', e => { const p = getMousePos(e); mouse.x = p.x; mouse.y = p.y; });
+        pCanvas.addEventListener('touchmove', e => { const p = getMousePos(e.touches[0]); mouse.x = p.x; mouse.y = p.y; }, {passive: true});
+        ['mouseleave', 'touchend'].forEach(evt => pCanvas.addEventListener(evt, () => { mouse.x = null; mouse.y = null; }));
 
         class Particle {
             constructor(x, y, color) {
-                this.x = x;
-                this.y = y;
-                this.originX = x;
-                this.originY = y;
-                this.color = color;
-                this.size = 2.2; // 略大于2，填补缝隙
-                this.vx = 0;
-                this.vy = 0;
-                this.friction = 0.85;
-                this.ease = 0.15;
+                this.x = x; this.y = y; this.originX = x; this.originY = y;
+                this.color = color; this.size = 2.2;
+                this.vx = 0; this.vy = 0; this.friction = 0.85; this.ease = 0.15;
             }
-            draw() {
-                pCtx.fillStyle = this.color;
-                // 绘制矩形比圆形性能更好，且拼接更紧密
-                pCtx.fillRect(this.x, this.y, this.size, this.size);
-            }
+            draw() { pCtx.fillStyle = this.color; pCtx.fillRect(this.x, this.y, this.size, this.size); }
             update() {
                 if (mouse.x != null) {
-                    const dx = mouse.x - this.x;
-                    const dy = mouse.y - this.y;
+                    const dx = mouse.x - this.x; const dy = mouse.y - this.y;
                     const dist = Math.sqrt(dx*dx + dy*dy);
                     if (dist < mouse.radius) {
                         const force = (mouse.radius - dist) / mouse.radius;
                         const angle = Math.atan2(dy, dx);
                         const push = force * 40;
-                        this.vx -= Math.cos(angle) * push;
-                        this.vy -= Math.sin(angle) * push;
+                        this.vx -= Math.cos(angle) * push; this.vy -= Math.sin(angle) * push;
                     }
                 }
-                this.vx *= this.friction;
-                this.vy *= this.friction;
+                this.vx *= this.friction; this.vy *= this.friction;
                 this.x += this.vx + (this.originX - this.x) * this.ease;
                 this.y += this.vy + (this.originY - this.y) * this.ease;
             }
@@ -412,42 +358,28 @@
         function initParticles() {
             const img = new Image();
             img.src = 'avatar.jpg';
-            
             img.onload = () => {
-                // 在离屏 canvas 绘制小图读取像素
                 const buffer = document.createElement('canvas');
-                buffer.width = 300;
-                buffer.height = 300;
+                buffer.width = 300; buffer.height = 300;
                 const bCtx = buffer.getContext('2d');
                 bCtx.drawImage(img, 0, 0, 300, 300);
                 const data = bCtx.getImageData(0, 0, 300, 300).data;
-                
                 particles = [];
-                // 关键修改：Gap设为2，Size设为2.2，确保紧密且清晰
-                const gap = 2; 
-                
-                for (let y = 0; y < 300; y += gap) {
-                    for (let x = 0; x < 300; x += gap) {
+                for (let y = 0; y < 300; y += 2) {
+                    for (let x = 0; x < 300; x += 2) {
                         const i = (y * 300 + x) * 4;
                         if (data[i + 3] > 128) {
-                            const color = `rgb(${data[i]}, ${data[i+1]}, ${data[i+2]})`;
-                            particles.push(new Particle(x, y, color));
+                            particles.push(new Particle(x, y, `rgb(${data[i]}, ${data[i+1]}, ${data[i+2]})`));
                         }
                     }
                 }
                 animateParticles();
             };
-            
             img.onerror = () => {
-                // 错误回退：显示首字母
-                pCtx.fillStyle = '#8B4513';
-                pCtx.font = 'bold 150px Arial';
-                pCtx.textAlign = 'center'; 
-                pCtx.textBaseline = 'middle';
-                pCtx.fillText('J', 150, 150);
+                pCtx.fillStyle = '#8B4513'; pCtx.font = 'bold 100px Arial';
+                pCtx.fillText('Commander', 10, 150);
             }
         }
-
         function animateParticles() {
             pCtx.clearRect(0, 0, 300, 300);
             for (let p of particles) { p.update(); p.draw(); }
@@ -455,26 +387,70 @@
         }
         initParticles();
 
-        // --- 3. 篮球游戏 (易玩版) ---
+        // --- 3. 愤怒的司令 (Angry Commander Game) ---
         const gCanvas = document.getElementById('game-canvas');
         const gCtx = gCanvas.getContext('2d');
         
-        // 游戏参数
-        const GRAVITY = 0.5; // 重力略微减小
-        let level = 1;
-        
-        // 关键修改：篮筐降低位置 Y=220 (原来150，太高)
-        let hoop = { x: 280, y: 220, w: 45, dir: 1.5 }; 
-        
-        let ball = { x: 50, y: 420, r: 12, vx: 0, vy: 0, isDragging: false, isFlying: false };
-        let dragStart = { x: 0, y: 0 };
-        let dragCurrent = { x: 0, y: 0 }; // 用于绘制实时拖拽线
+        // 游戏资源
+        const commanderImg = new Image();
+        commanderImg.src = 'commander.png'; // 你的大头照
 
-        function getGamePos(e) {
+        // 物理参数
+        let level = 1;
+        const GROUND_Y = 350;
+        const SLING_X = 120;
+        const SLING_Y = 280;
+        
+        // 弹弓与炮弹状态
+        let ball = { x: SLING_X, y: SLING_Y, r: 25, vx: 0, vy: 0, state: 'idle', rotation: 0 }; 
+        // state: 'idle' (on sling), 'dragging', 'flying', 'hit'
+        
+        let dragPos = { x: SLING_X, y: SLING_Y };
+        
+        // 目标 (Target Boxes)
+        let targets = [];
+
+        function initLevel() {
+            ball.state = 'idle';
+            ball.x = SLING_X; ball.y = SLING_Y;
+            ball.vx = 0; ball.vy = 0;
+            ball.rotation = 0;
+            
+            targets = [];
+            // 生成关卡目标
+            if(level === 1) {
+                // 静止的三个箱子
+                targets.push({ x: 450, y: GROUND_Y - 40, w: 40, h: 40, active: true });
+                targets.push({ x: 450, y: GROUND_Y - 80, w: 40, h: 40, active: true });
+                targets.push({ x: 450, y: GROUND_Y - 120, w: 40, h: 40, active: true });
+            } else if (level === 2) {
+                // 远处的箱子 + 移动障碍
+                targets.push({ x: 500, y: GROUND_Y - 40, w: 40, h: 40, active: true });
+                targets.push({ x: 500, y: GROUND_Y - 80, w: 40, h: 40, active: true });
+                // 这里的逻辑在update里处理移动
+            } else {
+                // 躲在墙后面
+                targets.push({ x: 520, y: GROUND_Y - 40, w: 30, h: 30, active: true });
+                targets.push({ x: 300, y: GROUND_Y - 100, w: 20, h: 100, active: true, type: 'wall' }); // 墙壁
+            }
+            document.getElementById('level-display').innerText = `Level ${level}: ${getLevelName()}`;
+        }
+
+        function getLevelName() {
+            if(level==1) return "First Strike";
+            if(level==2) return "Long Shot";
+            return "The Bunker";
+        }
+
+        // 输入处理
+        function getGameInput(e) {
             const rect = gCanvas.getBoundingClientRect();
+            // 适配 Canvas 缩放 (CSS width vs Attribute width)
+            const scaleX = gCanvas.width / rect.width;
+            const scaleY = gCanvas.height / rect.height;
             const cx = e.touches ? e.touches[0].clientX : e.clientX;
             const cy = e.touches ? e.touches[0].clientY : e.clientY;
-            return { x: cx - rect.left, y: cy - rect.top };
+            return { x: (cx - rect.left) * scaleX, y: (cy - rect.top) * scaleY };
         }
 
         gCanvas.addEventListener('mousedown', startDrag);
@@ -485,164 +461,194 @@
         window.addEventListener('touchend', endDrag);
 
         function startDrag(e) {
-            if(ball.isFlying) return;
+            if(ball.state !== 'idle') return;
             if(e.cancelable) e.preventDefault();
-            const pos = getGamePos(e);
-            if(Math.hypot(pos.x - ball.x, pos.y - ball.y) < 50) {
-                ball.isDragging = true;
-                dragStart = pos;
-                dragCurrent = pos;
+            const pos = getGameInput(e);
+            if(Math.hypot(pos.x - SLING_X, pos.y - SLING_Y) < 80) {
+                ball.state = 'dragging';
+                dragPos = pos;
             }
         }
 
         function moveDrag(e) {
-            if(ball.isDragging) {
+            if(ball.state === 'dragging') {
                 if(e.cancelable) e.preventDefault();
-                dragCurrent = getGamePos(e);
+                let pos = getGameInput(e);
+                // 限制拖拽半径
+                let dx = pos.x - SLING_X;
+                let dy = pos.y - SLING_Y;
+                let dist = Math.sqrt(dx*dx + dy*dy);
+                let maxDist = 100;
+                if(dist > maxDist) {
+                    let ratio = maxDist / dist;
+                    pos.x = SLING_X + dx * ratio;
+                    pos.y = SLING_Y + dy * ratio;
+                }
+                dragPos = pos;
+                ball.x = pos.x; 
+                ball.y = pos.y;
             }
         }
 
         function endDrag(e) {
-            if(ball.isDragging) {
-                ball.isDragging = false;
-                ball.isFlying = true;
-                
-                // 关键修改：增加力度倍数 0.25 (原来0.15)，更容易投高
-                let dx = ball.x - dragCurrent.x;
-                let dy = ball.y - dragCurrent.y;
-                
-                ball.vx = dx * 0.25; 
-                ball.vy = dy * 0.25;
-                
-                // 限制最大速度，防止飞出宇宙
-                ball.vx = Math.min(Math.max(ball.vx, -25), 25);
-                ball.vy = Math.min(Math.max(ball.vy, -25), 25);
+            if(ball.state === 'dragging') {
+                ball.state = 'flying';
+                // 发射！反向向量
+                let dx = SLING_X - ball.x;
+                let dy = SLING_Y - ball.y;
+                ball.vx = dx * 0.18; // 力度系数
+                ball.vy = dy * 0.18;
             }
-        }
-
-        function resetBall() {
-            ball.isFlying = false;
-            ball.vx = 0; ball.vy = 0;
-            ball.x = 50; ball.y = 420;
         }
 
         function updateGame() {
             gCtx.clearRect(0, 0, gCanvas.width, gCanvas.height);
 
-            // 1. 篮筐移动逻辑
-            if(level === 2) {
-                hoop.x += 1.5 * hoop.dir;
-                if(hoop.x > 300 || hoop.x < 150) hoop.dir *= -1;
-            } else if (level === 3) {
-                hoop.x += 3 * hoop.dir;
-                if(hoop.x > 310 || hoop.x < 120) hoop.dir *= -1;
-            }
-
-            // 2. 绘制篮架
-            // 柱子
-            gCtx.fillStyle = '#95a5a6';
-            gCtx.fillRect(hoop.x + 40, hoop.y - 40, 8, 300);
-            // 篮板
-            gCtx.fillStyle = '#ecf0f1';
-            gCtx.fillRect(hoop.x + 15, hoop.y - 50, 6, 60);
-            gCtx.strokeStyle = '#c0392b';
-            gCtx.strokeRect(hoop.x + 18, hoop.y - 35, 3, 25);
-            // 篮筐环
-            gCtx.beginPath();
-            gCtx.strokeStyle = '#e74c3c';
-            gCtx.lineWidth = 4;
-            gCtx.moveTo(hoop.x - hoop.w/2, hoop.y);
-            gCtx.lineTo(hoop.x + 15, hoop.y);
-            gCtx.stroke();
-
-            // 3. 球的物理
-            if(ball.isFlying) {
-                ball.vy += GRAVITY;
+            // 1. 绘制背景和地面
+            gCtx.fillStyle = '#ecf0f1'; // 云朵色地面
+            gCtx.fillRect(0, GROUND_Y, gCanvas.width, gCanvas.height - GROUND_Y);
+            
+            // 2. 物理逻辑
+            if (ball.state === 'flying') {
+                ball.vy += 0.4; // 重力
                 ball.x += ball.vx;
                 ball.y += ball.vy;
+                ball.rotation += 0.15; // 旋转司令头
 
-                // 边界反弹
-                if(ball.y + ball.r > gCanvas.height) {
-                    ball.y = gCanvas.height - ball.r;
-                    ball.vy *= -0.6;
-                    ball.vx *= 0.8;
+                // 边界/地面判定
+                if (ball.y + ball.r > GROUND_Y) {
+                    ball.y = GROUND_Y - ball.r;
+                    ball.vy *= -0.5; // 地面摩擦反弹
+                    ball.vx *= 0.6;
+                    if(Math.abs(ball.vx) < 0.5 && Math.abs(ball.vy) < 0.5) {
+                        setTimeout(initLevel, 1000); // 停下后重置
+                        ball.state = 'stopped';
+                    }
                 }
-                if(ball.x > gCanvas.width || ball.x < 0) ball.vx *= -0.8;
+                if (ball.x > gCanvas.width) setTimeout(initLevel, 500);
 
-                // 停止
-                if(Math.abs(ball.vy) < 0.5 && Math.abs(ball.vx) < 0.5 && ball.y > gCanvas.height - 20) {
-                    resetBall();
+                // 碰撞检测 (与 Targets)
+                let activeCount = 0;
+                for(let t of targets) {
+                    if(!t.active) continue;
+                    activeCount++;
+                    
+                    // 简单的 AABB 碰撞
+                    if(ball.x + ball.r > t.x && ball.x - ball.r < t.x + t.w &&
+                       ball.y + ball.r > t.y && ball.y - ball.r < t.y + t.h) {
+                        
+                        // 撞到了
+                        if(t.type === 'wall') {
+                             ball.vx *= -0.8; // 撞墙反弹
+                        } else {
+                            // 撞到目标
+                            t.active = false; // 消除目标
+                            ball.vy *= 0.8; 
+                            // 产生爆炸效果(简化：画个圈)
+                            gCtx.beginPath();
+                            gCtx.fillStyle = '#f1c40f';
+                            gCtx.arc(t.x + t.w/2, t.y + t.h/2, 30, 0, Math.PI*2);
+                            gCtx.fill();
+                        }
+                    }
                 }
 
-                // 碰撞检测：篮板 (简单的矩形碰撞)
-                if(ball.x > hoop.x + 10 && ball.x < hoop.x + 30 && ball.y < hoop.y + 10 && ball.y > hoop.y - 60) {
-                    ball.vx *= -0.8;
-                    ball.x = hoop.x + 10;
-                }
-
-                // 进球检测
-                if(ball.vy > 0 && 
-                   ball.x > hoop.x - hoop.w/2 + 5 && 
-                   ball.x < hoop.x + 10 && 
-                   Math.abs(ball.y - hoop.y) < 15) {
-                       successShot();
-                       resetBall();
+                if(activeCount === 0 && targets.length > 0 && ball.state === 'flying') {
+                    // 赢了！
+                    ball.state = 'win';
+                    winLevel();
                 }
             }
 
-            // 4. 绘制拖拽辅助线 (拉弹弓效果)
-            if(ball.isDragging) {
-                gCtx.beginPath();
-                gCtx.strokeStyle = 'rgba(255,255,255,0.6)';
-                gCtx.lineWidth = 2;
-                gCtx.setLineDash([5, 5]);
-                gCtx.moveTo(ball.x, ball.y);
-                gCtx.lineTo(dragCurrent.x, dragCurrent.y); // 拉线
-                gCtx.stroke();
-                
-                // 预测轨迹线 (反向)
-                gCtx.beginPath();
-                gCtx.strokeStyle = 'rgba(231, 76, 60, 0.5)';
-                gCtx.moveTo(ball.x, ball.y);
-                let predX = ball.x - (dragCurrent.x - ball.x);
-                let predY = ball.y - (dragCurrent.y - ball.y);
-                gCtx.lineTo(predX, predY);
-                gCtx.stroke();
-                gCtx.setLineDash([]);
+            // 3. 绘制弹弓后部 (Sling Back)
+            gCtx.beginPath();
+            gCtx.lineWidth = 6;
+            gCtx.strokeStyle = '#3e2723';
+            gCtx.moveTo(SLING_X - 15, SLING_Y);
+            if(ball.state === 'dragging') {
+                gCtx.lineTo(ball.x, ball.y + 10);
+            } else {
+                gCtx.lineTo(SLING_X, SLING_Y);
             }
-
-            // 5. 绘制球
-            gCtx.beginPath();
-            gCtx.fillStyle = '#d35400';
-            gCtx.arc(ball.x, ball.y, ball.r, 0, Math.PI*2);
-            gCtx.fill();
-            // 纹路
-            gCtx.strokeStyle = '#f39c12';
-            gCtx.lineWidth = 2;
-            gCtx.beginPath();
-            gCtx.moveTo(ball.x - ball.r, ball.y);
-            gCtx.lineTo(ball.x + ball.r, ball.y);
             gCtx.stroke();
+
+            // 4. 绘制目标 (Targets)
+            for(let t of targets) {
+                if(!t.active) continue;
+                if(t.type === 'wall') {
+                    gCtx.fillStyle = '#7f8c8d';
+                    gCtx.fillRect(t.x, t.y, t.w, t.h);
+                } else {
+                    gCtx.fillStyle = '#e74c3c'; // 红色目标箱子
+                    gCtx.fillRect(t.x, t.y, t.w, t.h);
+                    // 箱子纹理
+                    gCtx.strokeStyle = '#fff';
+                    gCtx.lineWidth = 2;
+                    gCtx.strokeRect(t.x, t.y, t.w, t.h);
+                    gCtx.beginPath(); gCtx.moveTo(t.x, t.y); gCtx.lineTo(t.x+t.w, t.y+t.h); gCtx.stroke();
+                    gCtx.beginPath(); gCtx.moveTo(t.x+t.w, t.y); gCtx.lineTo(t.x, t.y+t.h); gCtx.stroke();
+                }
+            }
+
+            // 5. 绘制司令 (The Commander)
+            gCtx.save();
+            gCtx.translate(ball.x, ball.y);
+            gCtx.rotate(ball.rotation);
+            // 绘制圆形裁切的大头照
+            gCtx.beginPath();
+            gCtx.arc(0, 0, ball.r, 0, Math.PI * 2);
+            gCtx.clip();
+            if(commanderImg.complete && commanderImg.naturalWidth > 0) {
+                gCtx.drawImage(commanderImg, -ball.r, -ball.r, ball.r*2, ball.r*2);
+            } else {
+                // 如果图片没加载出来，画个黄脸备用
+                gCtx.fillStyle = '#f1c40f';
+                gCtx.fill();
+                gCtx.fillStyle = '#000';
+                gCtx.fillText('^_^', -10, 5);
+            }
+            gCtx.restore();
+
+            // 6. 绘制弹弓前部 (Sling Front)
+            gCtx.beginPath();
+            gCtx.lineWidth = 6;
+            gCtx.strokeStyle = '#5d4037';
+            gCtx.moveTo(SLING_X + 10, SLING_Y);
+            if(ball.state === 'dragging') {
+                gCtx.lineTo(ball.x, ball.y + 10);
+            } else {
+                gCtx.lineTo(SLING_X, SLING_Y);
+            }
+            gCtx.stroke();
+
+            // 弹弓底座
+            gCtx.fillStyle = '#5d4037';
+            gCtx.fillRect(SLING_X - 5, SLING_Y, 10, GROUND_Y - SLING_Y);
 
             requestAnimationFrame(updateGame);
         }
 
-        function successShot() {
+        function winLevel() {
+            // 解锁照片
             const photo = document.getElementById(`lp${level}`);
             if(photo) {
                 photo.classList.add('unlocked');
             }
+            
+            // 庆祝提示
             if(level < 3) {
                 level++;
-                document.getElementById('level-display').innerText = `Level ${level}: ${level===2 ? 'Moving Hoop' : 'Pro Challenge'}`;
-                showModal('SWISH!', 'Nice shot! Next level loaded.');
-                setTimeout(closeModal, 1200);
+                showModal('VICTORY!', `Commander, target destroyed! Moving to mission ${level}.`);
+                setTimeout(() => {
+                    closeModal();
+                    initLevel();
+                }, 2000);
             } else {
-                document.getElementById('level-display').innerText = "🏆 MVP 🏆";
-                showModal('CONGRATS!', 'You are a basketball master!');
+                showModal('MISSION ACCOMPLISHED!', 'Commander, you have conquered the field!');
             }
         }
 
+        initLevel();
         updateGame();
 
     </script>
